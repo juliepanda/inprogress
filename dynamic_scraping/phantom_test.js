@@ -20,9 +20,8 @@ var evaluatePage = function (page) {
   var deferred = Q.defer();
   page.evaluate( function() {
     /*
-    * declare VARIABLES here, don't ask my why I couldn't do it outside..i'll fig it out later
-    * */
-    
+     * declare VARIABLES here, don't ask my why I couldn't do it outside..i'll fig it out later
+     * */
     document.querySelector("select#officeId").value = SANTA_CLARA;
     document.querySelector("input[name='firstName']").value = FIRST_NAME;
     document.querySelector("input[name='lastName']").value = LAST_NAME;
@@ -33,7 +32,7 @@ var evaluatePage = function (page) {
     document.querySelector("input[name='telArea']").value = TEL_AREA;
     document.querySelector("input[name='telPrefix']").value = TEL_PREFIX;
     document.querySelector("input[name='telSuffix']").value = TEL_SUFFIX;
-    document.querySelector("input[name='requestedTask'][value='DT']:checked");
+    document.querySelector("input[name='requestedTask'][value='DT']").click();
   });
   return deferred.promise;
 };
