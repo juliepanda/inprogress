@@ -26,7 +26,10 @@ var includeJS = function (page) {
 
 var evaluatePage = function (page) {
   var deferred = Q.defer();
-  page.evaluate(deferred.resolve);
+  page.evaluate( function () {
+    
+
+  } );
   return deferred.promise;
 };
 
@@ -36,9 +39,33 @@ var screenCapture = function (page) {
   return deferred.promise;
 };
 
-openPage(page, url).then(function() {
+/*openPage(page, url).then(function() {
   includeJs(page);
   evaluatePage(function() {
+  document.querySelector("select#officeId").value = SANTA_CLARA;
+  document.querySelector("input[name='firstName']").value = FIRST_NAME;
+  document.querySelector("input[name='lastName']").value = LAST_NAME;
+  document.querySelector("input[name='dlNumber']").value = DL_NUMBER;
+  document.querySelector("input[name='birthMonth']").value = B_MONTH;
+  document.querySelector("input[name='birthDay']").value = B_DAY;
+  document.querySelector("input[name='birthYear']").value = B_YEAR;
+  document.querySelector("input[name='telArea']").value = TEL_AREA;
+  document.querySelector("input[name='telPrefix']").value = TEL_PREFIX;
+  document.querySelector("input[name='telSuffix']").value = TEL_SUFFIX;
+  document.querySelector("input[name='requestedTask'][value='DT']:checked");
+  $("button[type=submit]").click();
+  });
+  screenCapture(page);
+  phantom.exit();
+  });
+  */
+
+openPage(page, url)
+.then( function() {
+  includeJS(page);
+}) /*
+.then( function() {
+  evaluatePage(page).then( function() {
     document.querySelector("select#officeId").value = SANTA_CLARA;
     document.querySelector("input[name='firstName']").value = FIRST_NAME;
     document.querySelector("input[name='lastName']").value = LAST_NAME;
@@ -52,6 +79,8 @@ openPage(page, url).then(function() {
     document.querySelector("input[name='requestedTask'][value='DT']:checked");
     $("button[type=submit]").click();
   });
+})*/
+.then( function() {
   screenCapture(page);
   phantom.exit();
 });
