@@ -39,10 +39,19 @@ var fillFields = function (page) {
 
 var clickSubmit = function (page) {
   var deferred = Q.defer();
-  page.evaluate( function () {
+  page.evaluate( function() {
     document.querySelector("input[value='Submit']").click();
-    console.log('cool');
   });
+};
+
+var checkDate = function (page) {
+  //<p class="alert">Thursday, July 9, 2015 at 2:15 PM</p>
+  //<input type="submit" value="Schedule Appointment Selected">
+  var deferred = Q.defer();
+  page.evaluate( function() {
+    console.log(document.querySelector("p[class='alert']").innerText);
+  });
+  return deferred.promise;
 };
 
 var screenCapture = function (page) {
@@ -68,7 +77,8 @@ openPage(page, url)
 })
 .then( function() {
   console.log('poo'); // step 4
-  setTimeout(function() {
+  setTimeout( function() {
+    checkDate(page);
     screenCapture(page);
     phantom.exit();
   }, 5000);
