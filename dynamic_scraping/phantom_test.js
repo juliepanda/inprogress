@@ -1,7 +1,7 @@
-var url = 'https://www.dmv.ca.gov/foa/clear.do?goTo=driveTest',
-  jquery = 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js';
-
+var keys = require('./keys.js');
+var sendgrid = require('sendgrid')(keys.getSendgridUser, keys.getSendgridPassword);
 var Q = require('q');
+var jquery = 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js';
 
 var openPage = function (page, url) {
   var deferred = Q.defer();
@@ -35,7 +35,8 @@ var fillFields = function (page) {
     document.querySelector("input[name='requestedTask'][value='DT']").click();
   });
   return deferred.promise;
-};
+}
+;
 
 var clickSubmit = function (page) {
   var deferred = Q.defer();
@@ -61,6 +62,7 @@ var screenCapture = function (page) {
 };
 
 var page = require('webpage').create();
+var url = 'https://www.dmv.ca.gov/foa/clear.do?goTo=driveTest';
 
 openPage(page, url)
 .then( function() {
