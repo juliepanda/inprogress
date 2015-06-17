@@ -1,8 +1,10 @@
-var keys = require('./keys.js');
-var sendgrid = require('sendgrid')(keys.getSendgridUser, keys.getSendgridPassword);
+// var keys = require('./keys.js'); // put API keys in a module
+// var sendgrid = require('sendgrid')(keys.getSendgridUser, keys.getSendgridPassword);
 var Q = require('q');
+
 var jquery = 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js';
 
+// PhantomJS operations steps in promises
 var openPage = function (page, url) {
   var deferred = Q.defer();
   page.open(url, deferred.resolve);
@@ -35,8 +37,7 @@ var fillFields = function (page) {
     document.querySelector("input[name='requestedTask'][value='DT']").click();
   });
   return deferred.promise;
-}
-;
+};
 
 var clickSubmit = function (page) {
   var deferred = Q.defer();
@@ -50,8 +51,8 @@ var checkDate = function (page) {
   //<input type="submit" value="Schedule Appointment Selected">
   var deferred = Q.defer();
   page.evaluate( function() {
-    console.log(document.querySelector("p[class='alert']").innerText);
-  });
+    return document.querySelector("p[class='alert']").innerText;
+  }, 'innerText');
   return deferred.promise;
 };
 
@@ -61,6 +62,8 @@ var screenCapture = function (page) {
   return deferred.promise;
 };
 
+
+// run it!
 var page = require('webpage').create();
 var url = 'https://www.dmv.ca.gov/foa/clear.do?goTo=driveTest';
 
@@ -80,7 +83,7 @@ openPage(page, url)
 .then( function() {
   console.log('poo'); // step 4
   setTimeout( function() {
-    checkDate(page);
+    console.log(checkDate(page));
     screenCapture(page);
     phantom.exit();
   }, 5000);
