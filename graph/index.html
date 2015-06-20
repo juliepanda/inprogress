@@ -2,61 +2,154 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Cool</title>
-    <script src='http://d3js.org/d3.v2.min.js'></script>
+    <title>D3 example</title>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <style>
+
+      .link {
+        stroke: #777;
+        stroke-width: 2px;
+      }
+    </style>
   </head>
   <body>
+    <h1> D3 Graph Example </h1>
     <script>
       window.onload = function() {
-        var width = 640,
-        height = 480;
-        var nodes = [
-        { x: width/3, y: height/2},
-        { x: 2*width/3, y: height/2}
-        ];
+        var width = 800,
+            height = 600;
 
-        var edges = [
-        { source: 0, target: 1}
-        ];
+        var svg = d3.select('body').append('svg')
+          .attr('width', width)
+          .attr('height', height);
 
-        var bodySelection = d3.select("body");
+        var graph = {
+          "nodes": [  
+          {"name":"Myriel","group":1},
+          {"name":"Napoleon","group":1},
+          {"name":"Mlle.Baptistine","group":1},
+          {"name":"Mme.Magloire","group":1},
+          {"name":"CountessdeLo","group":1},
+          {"name":"Geborand","group":1},
+          {"name":"Champtercier","group":1},
+          {"name":"Cravatte","group":1},
+          {"name":"Count","group":1},
+          {"name":"OldMan","group":1},
+          {"name":"Labarre","group":2},
+          {"name":"Valjean","group":2},
+          {"name":"Marguerite","group":3},
+          {"name":"Mme.deR","group":2},
+          {"name":"Isabeau","group":2},
+          {"name":"Gervais","group":2},
+          {"name":"Tholomyes","group":3},
+          {"name":"Listolier","group":3}
+          ],
 
-        var svg = bodySelection.append("svg")
-        .attr("width", width)
-        .attr("height", height);
+            "links": [  
+            { "target": 11, "source":  0 },
+            { "target":  3, "source":  0 },
+            { "target": 10, "source":  0 },
+            { "target": 16, "source":  0 },
+            { "target":  1, "source":  0 },
+            { "target":  3, "source":  0 },
+            { "target":  9, "source":  0 },
+            { "target":  5, "source":  0 },
+            { "target": 11, "source":  0 },
+            { "target": 13, "source":  0 },
+            { "target": 16, "source":  0 },
+            { "target":  3, "source":  1 },
+            { "target":  9, "source":  1 },
+            { "target": 12, "source":  1 },
+            { "target":  4, "source":  2 },
+            { "target":  6, "source":  2 },
+            { "target":  8, "source":  2 },
+            { "target": 13, "source":  2 },
+            { "target": 10, "source":  3 },
+            { "target": 16, "source":  3 },
+            { "target":  9, "source":  3 },
+            { "target":  7, "source":  3 },
+            { "target": 11, "source":  5 },
+            { "target": 13, "source":  5 },
+            { "target": 12, "source":  5 },
+            { "target":  8, "source":  6 },
+            { "target": 13, "source":  6 },
+            { "target": 10, "source":  7 },
+            { "target": 11, "source":  7 },
+            { "target": 17, "source":  8 },
+            { "target": 13, "source":  8 },
+            { "target": 11, "source": 10 },
+            { "target": 16, "source": 10 },
+            { "target": 13, "source": 11 },
+            { "target": 14, "source": 12 },
+            { "target": 14, "source": 12 },
+            { "target": 14, "source": 12 },
+            { "target": 15, "source": 12 },
+            { "target": 16, "source": 12 },
+            { "target": 15, "source": 14 },
+            { "target": 16, "source": 14 },
+            { "target": 15, "source": 14 },
+          ]
+        };
+
+
+        // Extract the nodes and links from the data.
+        var nodes = graph.nodes,
+            links = graph.links;
 
         var force = d3.layout.force()
-        .size([width, height])
-        .nodes(nodes)
-        .links(links);
+          .size([width, height])
+          .nodes(nodes)
+          .links(links);
 
-        force.linkDistance(width/2);
+        force.linkDistance(width/3.05);
+
+        force.nodes(graph.nodes)
+          .links(graph.links)
+          .start();
 
         var link = svg.selectAll('.link')
-        .data(links)
-        .enter().append('line')
-        .attr('class', 'link');
+          .data(links)
+          .enter().append('line')
+          .attr('class', 'link');
 
         var node = svg.selectAll('.node')
-        .data(nodes)
-        .enter().append('circle')
-        .attr('class', 'node');
+          .data(nodes)
+          .enter().append('circle')
+          .attr('class', 'node')
+          .attr('r', 5)
+          .attr('fill', function(d) { return color(d.group); })
+          .on('click', clickNode)
+          .call(force.drag);
 
-        force.on('end', function() {
-          node.attr('r', width/25)
-          .attr('cx', function(d) { return d.x; })
-          .attr('cy', function(d) { return d.y; })
-          });
+        force.on('tick', function() {
+            node.attr('r', width/100)
+            .attr('cx', function(d) { return d.x; })
+            .attr('cy', function(d) { return d.y; });
 
-          link.attr('x1', function(d) { return d.source.x; })
+            link.attr('x1', function(d) { return d.source.x; })
+            .attr('y1', function(d) { return d.source.y; })
+            .attr('x2', function(d) { return d.target.x; })
+            .attr('y2', function(d) { return d.target.y; });
 
-        /*var circleSelection = svgSelection.append("circle")
-        .attr("cx", 25)
-        .attr("cy", 25)
-        .attr("r", 25)
-        .style("fill", "purple");*/
+            });
 
+        function clickNode() {
+          d3.select(this).transition()
+            .duration(550)
+            .style('fill', 'red');
         };
-      </script>
-    </body>
-  </html>
+
+        function color(groupNumber) {
+          var color_map = ['red', 'blue', 'gray', 'yellow', 'orange', 'black'];
+          if (groupNumber < color_map.length) {
+           return color_map[groupNumber]; 
+          } else {
+            return color_map[0];
+          };
+        };
+
+      };
+    </script>
+  </body>
+</html>
