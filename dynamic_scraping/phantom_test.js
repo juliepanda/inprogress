@@ -1,8 +1,8 @@
-// var keys = require('./keys.js'); // put API keys in a module
-// var sendgrid = require('sendgrid')(keys.getSendgridUser, keys.getSendgridPassword);
 var Q = require('q');
+var secrets = require('./secrets.js');
 
 var jquery = 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js';
+
 
 // PhantomJS operations steps in promises
 var openPage = function (page, url) {
@@ -19,10 +19,31 @@ var includeJS = function (page) {
 
 var fillFields = function (page) {
   var deferred = Q.defer();
-  page.evaluate( function() {
-    /*
-     * declare VARIABLES here, don't ask my why I couldn't do it outside..i'll fig it out later
-     * */
+  // package secret params in an object
+  var args = {
+    location:   secrets.getLocation().santa_clara,
+    firstName:  secrets.getName().firstName,
+    lastName:   secrets.getName().lastName,
+    DLNumber:   secrets.getDLNumber(),
+    bdayMonth:  secrets.getBirthday().month,
+    bdayDay:    secrets.getBirthday().day,
+    bdayYear:   secrets.getBirthday().year,
+    phoneAreaCode: secrets.getPhoneNumber().areaCode,
+    phonePrefix:  secrets.getPhoneNumber().prefix,
+    phoneSuffix:  secrets.getPhoneNumber().suffix
+  };
+  page.evaluate( function( args ) {
+    // unpack params
+    var SANTA_CLARA = args.location,
+      FIRST_NAME = args.firstName,
+      LAST_NAME = args.lastName,
+      DL_NUMBER = args.DLNumber,
+      B_MONTH = args.bdayMonth,
+      B_DAY = args.bdayDay,
+      B_YEAR = args.bdayYear,
+      TEL_AREA = args.phoneAreaCode,
+      TEL_PREFIX = args.phonePrefix,
+      TEL_SUFFIX = args.phoneSuffix;
 
     document.querySelector("select#officeId").value = SANTA_CLARA;
     document.querySelector("input[name='firstName']").value = FIRST_NAME;
@@ -35,7 +56,7 @@ var fillFields = function (page) {
     document.querySelector("input[name='telPrefix']").value = TEL_PREFIX;
     document.querySelector("input[name='telSuffix']").value = TEL_SUFFIX;
     document.querySelector("input[name='requestedTask'][value='DT']").click();
-  });
+  }, args);
   return deferred.promise;
 };
 
@@ -47,12 +68,11 @@ var clickSubmit = function (page) {
 };
 
 var checkDate = function (page) {
-  //<p class="alert">Thursday, July 9, 2015 at 2:15 PM</p>
-  //<input type="submit" value="Schedule Appointment Selected">
   var deferred = Q.defer();
-  page.evaluate( function() {
+  var ret = page.evaluate( function() {
     return document.querySelector("p[class='alert']").innerText;
-  }, 'innerText');
+  });
+  deferred.resolve = ret;
   return deferred.promise;
 };
 
@@ -70,23 +90,18 @@ var url = 'https://www.dmv.ca.gov/foa/clear.do?goTo=driveTest';
 openPage(page, url)
 .then( function() {
   includeJS(page);
-  console.log('BIG POO'); // step 1
 })
 .then( function() {
-  console.log('middling poo'); // step 2
   fillFields(page);
 })
 .then( function() {
-  console.log('another middling poo'); // step 3
-  clickSubmit(page);
+  setTimeout(function() {
+    clickSubmit(page);
+    screenCapture(page);
+  }, 5000);
 })
 .then( function() {
-  console.log('poo'); // step 4
-  setTimeout( function() {
-    console.log(checkDate(page));
-    screenCapture(page);
-    phantom.exit();
-  }, 5000);
+  phantom.exit();
 });
 
 
