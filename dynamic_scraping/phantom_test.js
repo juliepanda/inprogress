@@ -17,21 +17,9 @@ var includeJS = function (page) {
   return deferred.promise;
 };
 
-var fillFields = function (page) {
+var fillFields = function (page, args) {
   var deferred = Q.defer();
   // package secret params in an object
-  var args = {
-    location:   secrets.getLocation().santa_clara,
-    firstName:  secrets.getName().firstName,
-    lastName:   secrets.getName().lastName,
-    DLNumber:   secrets.getDLNumber(),
-    bdayMonth:  secrets.getBirthday().month,
-    bdayDay:    secrets.getBirthday().day,
-    bdayYear:   secrets.getBirthday().year,
-    phoneAreaCode: secrets.getPhoneNumber().areaCode,
-    phonePrefix:  secrets.getPhoneNumber().prefix,
-    phoneSuffix:  secrets.getPhoneNumber().suffix
-  };
   page.evaluate( function( args ) {
     // unpack params
     var SANTA_CLARA = args.location,
@@ -86,21 +74,38 @@ var screenCapture = function (page) {
 // run it!
 var page = require('webpage').create();
 var url = 'https://www.dmv.ca.gov/foa/clear.do?goTo=driveTest';
+// package secrets in object to avoid page.evaluate scoping problems
+var args = {
+  location:   secrets.getLocation().santa_clara,
+  firstName:  secrets.getName().firstName,
+  lastName:   secrets.getName().lastName,
+  DLNumber:   secrets.getDLNumber(),
+  bdayMonth:  secrets.getBirthday().month,
+  bdayDay:    secrets.getBirthday().day,
+  bdayYear:   secrets.getBirthday().year,
+  phoneAreaCode: secrets.getPhoneNumber().areaCode,
+  phonePrefix:  secrets.getPhoneNumber().prefix,
+  phoneSuffix:  secrets.getPhoneNumber().suffix
+};
 
 openPage(page, url)
 .then( function() {
+  console.log('first poo');
   includeJS(page);
 })
 .then( function() {
-  fillFields(page);
+  console.log('second poo');
+  fillFields(page, args);
 })
 .then( function() {
+  console.log('third poo');
   setTimeout(function() {
     clickSubmit(page);
-    screenCapture(page);
-  }, 5000);
+  }, 3000);
 })
 .then( function() {
+  console.log('fourth poo');
+  screenCapture(page);
   phantom.exit();
 });
 
