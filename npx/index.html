@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="jsfeat-min.js"></script>
+    <style>
+      video, canvas {
+        margin-left: 230px;
+        margin-top: 120px;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-frame">
+      <div class="demo-container">
+        <video id="video" width="460" height="360" preload autoplay loop muted></video>
+        <canvas id="canvas" width="460" height="360"></canvas>
+      </div>
+    </div>
+    <script>
+      window.onload = function() {
+        'use strict';
+        var video = document.getElementById('video');
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        //get webRTC video stream working
+        try {
+          navigator.getUserMedia = navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia;
+
+          navigator.getUserMedia({ video: true }, function(stream) {
+              try {
+              video.src = navigator.URL.createObjectURL(stream);
+              } catch (error) {
+              video.src = stream;
+              }
+              window.requestAnimationFrame(play);
+              }, function(error) {
+              alert(error);
+              });
+        } catch (error) {
+          alert(error);
+        }
+
+      }; 
+    </script>
+  </body>
+</html>
