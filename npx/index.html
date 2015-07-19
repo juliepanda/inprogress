@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8">
     <title></title>
-    <script type="text/javascript" src="jsfeat-min.js"></script>
+    <script type="text/javascript" src="bower_components/jsfeat/build/jsfeat-min.js"></script>
+    <script type="text/javascript" src="adapter.js"></script>
     <style>
       video, canvas {
         margin-left: 230px;
@@ -15,37 +16,40 @@
   <body>
     <div class="demo-frame">
       <div class="demo-container">
-        <video id="video" width="460" height="360" preload autoplay loop muted></video>
-        <canvas id="canvas" width="460" height="360"></canvas>
+        <video width="480" height="380" id="video" preload autoplay loop muted></video>
+        <canvas width="480" height="380" id="canvas"></canvas>
       </div>
     </div>
     <script>
       window.onload = function() {
-        'use strict';
+        //get webRTC video stream working
         var video = document.getElementById('video');
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
-        //get webRTC video stream working
-        try {
-          navigator.getUserMedia = navigator.getUserMedia ||
+        navigator.getUserMedia = ( navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia;
-
-          navigator.getUserMedia({ video: true }, function(stream) {
-              try {
-              video.src = navigator.URL.createObjectURL(stream);
-              } catch (error) {
-              video.src = stream;
-              }
-              window.requestAnimationFrame(play);
-              }, function(error) {
-              alert(error);
-              });
-        } catch (error) {
-          alert(error);
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia);
+       
+        var constraints = window.constraints = { audio: false, video: true };
+        
+        function successCallback(stream) {
+          var videoTracks = stream.getVideoTracks();
+          console.log('Got stream with constraints:', constraints);
+          console.log('Using video device: ' + videoTracks[0].label);
+          stream.onended = function() {
+            console.log('Stream ended');
+          };
+          window.stream = stream; // make variable available to browser console
+          attachMediaStream(video, stream);
         }
 
-      }; 
+        function errorCallback(error) {
+          console.log('navigator.getUserMedia error: ', error);
+        }
+
+        navigator.getUserMedia(constraints, successCallback, errorCallback);
+      }
     </script>
   </body>
 </html>
