@@ -1,0 +1,13 @@
+window.onload = function() {
+  'use strict';
+  var base = document.getElementById('base');
+  var matcher = document.getElementById('matcher');
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  
+  var canvasHeight = canvas.height;
+  var canvasWidth = canvas.width;
+  ctx.drawImage = (base, 0, 0, canvasWidth, canvasHeight);
+
+
+};
